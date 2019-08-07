@@ -40,8 +40,26 @@ call :DOWNLOADS
 call :JAVANUKE
 call :JAVAINSTALL
 call :TEAMNOTESINSTALL
+call :TRUSTEDSITES
 ::call :PACSNUKE
 GOTO MENU
+
+:TRUSTEDSITES
+@echo off
+setlocal EnableDelayedExpansion
+
+set "zonemap_domains_regkey=HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\Domains"
+
+for %%G in (
+	"mclaren.org"
+) do (
+	set "site=%%~G"
+	set "site=!site:*://=!"
+	set "site=!site:*www.=!"
+	>nul reg add "%zonemap_domains_regkey%\!site!" /v * /t REG_DWORD /d 2 /f
+)
+
+EXIT /b 0
 
 :DOTNETCHECK
 @echo off && cls
@@ -565,6 +583,10 @@ set JAVA_ARGUMENTS=/s INSTALL_SILENT=1 STATIC=0 AUTO_UPDATE=0 WEB_JAVA=1 WEB_JAV
 @echo off && cls
 echo Please wait, Installing Java
 "%USERPROFILE%\Downloads\jre-7u45-windows-i586.exe" %JAVA_ARGUMENTS%
+echo.
+echo Cleaning up Java Updater
+reg delete "HKLM\SOFTWARE\WOW6432Node\JavaSoft\Auto Update" /f
+reg delete "HKLM\SOFTWARE\WOW6432Node\JavaSoft\Java Update" /f
 
 EXIT /B 0
 
