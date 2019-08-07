@@ -37,32 +37,62 @@ echo  v%SCRIPT_VERSION%, updated %SCRIPT_UPDATED%
 
 call :DOTNETCHECK
 call :DOWNLOADS
-:: call :JAVANUKE
-:: call :PACSNUKE
+call :JAVANUKE
 call :JAVAINSTALL
 call :TEAMNOTESINSTALL
-
-GOTO EOF
+::call :PACSNUKE
+GOTO MENU
 
 :DOTNETCHECK
 @echo off && cls
+title Dotnet Checker
 echo.
 echo Checking if the required dotnet package is installed for Physician Documentation
 echo.
 dism /online /Enable-Feature /FeatureName:NetFx3
 echo.
 
-:TEAMNOTESINSTALL
+EXIT /B 0
+
+:DOWNLOADS
 SETLOCAL
-set TEAMNOTES_ARGUMENTS=/quiet /passive
+set SCRIPT_VERSION=0.0.1
+set SCRIPT_UPDATED=08-07-2019
+
+title WSP Downloader v%SCRIPT_VERSION% (%SCRIPT_UPDATED%)
+
+@echo off && cls
+
+echo Checking if Java has already been downloaded
+echo.
+
+if exist %USERPROFILE%\Downloads\jre-7u45-windows-i586.exe (
+    echo Java already downloaded
+) else (
+    bitsadmin /transfer "Java" http://wsp.mclaren.org/content/Tools/jre-7u45-windows-i586.exe %UserProfile%\Downloads\jre-7u45-windows-i586.exe
+)
+
+if exist %USERPROFILE%\Downloads\TeamNotesFormEditorLibrary.msi (
+    echo Team Notes already downloaded.
+) else (
+    bitsadmin /transfer "Team Notes" http://wsp.mclaren.org/content/Tools/TeamNotesFormEditorLibrary.msi %UserProfile%\Downloads\TeamNotesFormEditorLibrary.msi
+)
+
+EXIT /B 0
+
+:TEAMNOTESINSTALL
+
+SETLOCAL
+set TEAMNOTES_ARGUMENTS=/quiet
+title Team Notes Installer
 @echo off && cls
 echo PLease wait, Installing Team Notes
 "%USERPROFILE%\Downloads\TeamNotesFormEditorLibrary.msi" %TEAMNOTES_ARGUMENTS%
+EXIT /B 0
 
 :JAVANUKE
+
 SETLOCAL
-
-
 :::::::::::::::
 :: VARIABLES :: ---- Set these to your desired values. The defaults should work fine though ------ ::
 :::::::::::::::
@@ -526,37 +556,17 @@ call :log "%CUR_DATE% %TIME%   COMPLETE. Recommend rebooting and washing your ha
 echo:%~1 >> "%LOGPATH%\%LOGFILE%"
 echo:%~1
 
-:DOWNLOADS
-SETLOCAL
-set SCRIPT_VERSION=0.0.1
-set SCRIPT_UPDATED=08-07-2019
-
-title WSP Downloader v%SCRIPT_VERSION% (%SCRIPT_UPDATED%)
-
-@echo off && cls
-
-echo Checking if Java has already been downloaded
-echo.
-
-if exist %USERPROFILE%\Downloads\jre-7u45-windows-i586.exe (
-    echo Java already downloaded. Attempting to install.
-    call :JAVAINSTALL
-) else (
-    bitsadmin /transfer "Java" http://wsp.mclaren.org/content/Tools/jre-7u45-windows-i586.exe %UserProfile%\Downloads\jre-7u45-windows-i586.exe
-)
-
-if exist %USERPROFILE%\Downloads\TeamNotesFormEditorLibrary.msi (
-    echo Team Notes already downloaded.
-) else (
-    bitsadmin /transfer "Team Notes" http://wsp.mclaren.org/content/Tools/TeamNotesFormEditorLibrary.msi %UserProfile%\Downloads\TeamNotesFormEditorLibrary.msi
-)
+EXIT /B 0
 
 :JAVAINSTALL
 SETLOCAL
+title Java Installer
 set JAVA_ARGUMENTS=/s INSTALL_SILENT=1 STATIC=0 AUTO_UPDATE=0 WEB_JAVA=1 WEB_JAVA_SECURITY_LEVEL=M WEB_ANALYTICS=0 EULA=0 REBOOT=0
 @echo off && cls
-echo PLease wait, Installing Java
+echo Please wait, Installing Java
 "%USERPROFILE%\Downloads\jre-7u45-windows-i586.exe" %JAVA_ARGUMENTS%
+
+EXIT /B 0
 
 :PACSNUKE
 SETLOCAL
