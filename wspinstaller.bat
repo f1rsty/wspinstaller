@@ -1,9 +1,13 @@
+:: Written By: Jason Sholler
+:: Maintainer: Jason Sholler
+
 @ECHO OFF
+if "%~s0"=="%~s1" ( cd %~sp1 & shift ) else (
+  echo CreateObject^("Shell.Application"^).ShellExecute "%~s0","%~0 %*","","runas",1 >"%tmp%%~n0.vbs" & "%tmp%%~n0.vbs" & del /q "%tmp%%~n0.vbs" & goto :eof
+)
+:eof
 
-CLS
-ECHO This program will assist in fixing WSP. Please use the following options menu to navigate
-TIMEOUT 5
-
+:: Boots into the menu to allow troubleshooting - If in doubt, do a full install of WSP
 :MENU
 CLS
 ECHO.
@@ -20,6 +24,8 @@ IF %M%==1 GOTO JAVANUKE
 IF %M%==2 GOTO INSTALLWSP
 IF %M%==3 GOTO EOF
 
+:: The full install of WSP includes a few steps, defined as functions and calls to those functions. Each
+:: function acts as a separate "screen" / script for portability
 :INSTALLWSP
 SETLOCAL
 set SCRIPT_VERSION=0.0.1
@@ -28,12 +34,27 @@ title WSP Installer v%SCRIPT_VERSION% (%SCRIPT_UPDATED%)
 
 cls
 
-echo.
-echo ======================
-echo  WSP Installer Script
-echo ======================
-echo.
-echo  v%SCRIPT_VERSION%, updated %SCRIPT_UPDATED%
+ECHO.
+ECHO =============================
+ECHO Please enter a site location.
+ECHO =============================
+ECHO.
+echo 1. McLaren Flint
+echo 2. McLaren Lapeer
+echo 3. McLaren Bay
+echo 4. McLaren Macomb
+echo 5. McLaren Oakland
+echo 6. McLaren Central
+echo Q. Back to options menu
+ECHO.
+SET /P M=Enter your selection: 
+IF %M%==1 set executable=jre-7u45-windows-i586.exe && set shortcutlink="https://mrmc-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fWSP" && set linktext=McLaren WSP Flint
+IF %M%==2 set executable=jre-6u31-windows-i586-s.exe && set shortcutlink="https://lrmc-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fwsp%2f" && set linktext=McLaren WSP Lapeer
+IF %M%==3 set executable=jre-6u31-windows-i586-s.exe && set shortcutlink="https://bay-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fwsp" && set linktext=McLaren WSP Bay
+IF %M%==4 set executable=jre-6u31-windows-i586-s.exe && set shortcutlink="https://mcrmc-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fwsp" && set linktext=McLaren WSP Macomb
+IF %M%==5 set executable=jre-6u31-windows-i586-s.exe && set shortcutlink="https://poh-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fwsp" && set linktext=McLaren WSP Oakland
+IF %M%==6 set executable=jre-6u31-windows-i586-s.exe && set shortcutlink="https://cmi-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fwsp" && set linktext=McLaren WSP Central
+IF %M%==Q GOTO EOF
 
 call :DOTNETCHECK
 call :DOWNLOADS
@@ -45,13 +66,16 @@ call :ADDSHORTCUT
 ::call :PACSNUKE
 GOTO MENU
 
+:: Adds the WSP Icon (Internet Explorer) to the desktop - Sets the homepage for that shortcut to the site and 
+:: also changes the behavior to full screen the window, it does this by making a visual basic script
+:: then cleans that script up after running it
 :ADDSHORTCUT
 @echo off
 set SCRIPT="%TEMP%\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
 echo Set oWS = WScript.CreateObject("WScript.Shell") >> %SCRIPT%
-echo sLinkFile = "%USERPROFILE%\Desktop\McLaren WSP Flint.lnk" >> %SCRIPT%
+echo sLinkFile = "%USERPROFILE%\Desktop\%linktext%.lnk" >> %SCRIPT%
 echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%
-echo oLink.Arguments = "https://mrmc-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fWSP" >> %SCRIPT%
+echo oLink.Arguments = %shortcutlink% >> %SCRIPT%
 echo oLink.WindowStyle = 0 >> %SCRIPT%
 echo oLink.TargetPath = "%PROGRAMFILES%\Internet Explorer\iexplore.exe" >> %SCRIPT%
 echo oLink.Save >> %SCRIPT%
@@ -106,7 +130,7 @@ if exist %USERPROFILE%\Downloads\jre-7u45-windows-i586.exe (
     echo Java already downloaded
     PING localhost -n 3 >NUL
 ) else (
-    bitsadmin /transfer "Java" http://wsp.mclaren.org/content/Tools/jre-7u45-windows-i586.exe %UserProfile%\Downloads\jre-7u45-windows-i586.exe
+    bitsadmin /transfer "Downloading Java" http://wsp.mclaren.org/content/Tools/jre-7u45-windows-i586.exe %UserProfile%\Downloads\jre-7u45-windows-i586.exe
     if exist %USERPROFILE%\Downloads\jre-7u45-windows-i586.exe (
         echo Java successfully downloaded
         PING localhost -n 2 >NUL
@@ -120,7 +144,7 @@ if exist %USERPROFILE%\Downloads\TeamNotesFormEditorLibrary.msi (
     echo Team Notes already downloaded.
     PING localhost -n 3 >NUL
 ) else (
-    bitsadmin /transfer "Team Notes" http://wsp.mclaren.org/content/Tools/TeamNotesFormEditorLibrary.msi %UserProfile%\Downloads\TeamNotesFormEditorLibrary.msi
+    bitsadmin /transfer "Downloading Team Notes" http://wsp.mclaren.org/content/Tools/TeamNotesFormEditorLibrary.msi %UserProfile%\Downloads\TeamNotesFormEditorLibrary.msi
     if exist %USERPROFILE%\Downloads\TeamNotesFormEditorLibrary.msi (
         echo Team Notes successfully downloaded
         PING localhost -n 2 >NUL
@@ -143,6 +167,16 @@ title Team Notes Installer
 @echo off && cls
 echo PLease wait, Installing Team Notes
 "%USERPROFILE%\Downloads\TeamNotesFormEditorLibrary.msi" %TEAMNOTES_ARGUMENTS%
+
+if exist %PROGRAMFILES(x86)%\Paragon (
+    echo Team Notes installed successfully
+    PING localhost -n 3 >NUL
+) else (
+    echo Check if dotnet 3x was enabled and if it was downloaded. If not, try running this installer again.
+    PING localhost -n 3 >NUL
+    GOTO EOF
+)
+
 EXIT /B 0
 
 :JAVANUKE
