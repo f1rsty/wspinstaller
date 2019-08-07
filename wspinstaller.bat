@@ -3,9 +3,9 @@
 CLS
 ECHO This program will assist in fixing WSP. Please use the following options menu to navigate
 TIMEOUT 5
-CLS
 
 :MENU
+CLS
 ECHO.
 ECHO ========================================
 ECHO Please check from the following options.
@@ -41,8 +41,26 @@ call :JAVANUKE
 call :JAVAINSTALL
 call :TEAMNOTESINSTALL
 call :TRUSTEDSITES
+call :ADDSHORTCUT
 ::call :PACSNUKE
 GOTO MENU
+
+:ADDSHORTCUT
+@echo off
+set SCRIPT="%TEMP%\%RANDOM%-%RANDOM%-%RANDOM%-%RANDOM%.vbs"
+echo Set oWS = WScript.CreateObject("WScript.Shell") >> %SCRIPT%
+echo sLinkFile = "%USERPROFILE%\Desktop\McLaren WSP Flint.lnk" >> %SCRIPT%
+echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%
+echo oLink.Arguments = "https://mrmc-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fWSP" >> %SCRIPT%
+echo oLink.WindowStyle = 0 >> %SCRIPT%
+echo oLink.TargetPath = "%PROGRAMFILES%\Internet Explorer\iexplore.exe" >> %SCRIPT%
+echo oLink.Save >> %SCRIPT%
+
+cscript /nologo %SCRIPT%
+
+del %SCRIPT%
+
+EXIT /b 0
 
 :TRUSTEDSITES
 @echo off
@@ -86,15 +104,34 @@ echo.
 
 if exist %USERPROFILE%\Downloads\jre-7u45-windows-i586.exe (
     echo Java already downloaded
+    PING localhost -n 3 >NUL
 ) else (
     bitsadmin /transfer "Java" http://wsp.mclaren.org/content/Tools/jre-7u45-windows-i586.exe %UserProfile%\Downloads\jre-7u45-windows-i586.exe
+    if exist %USERPROFILE%\Downloads\jre-7u45-windows-i586.exe (
+        echo Java successfully downloaded
+        PING localhost -n 2 >NUL
+    ) else (
+        echo Please download Java from http://wsp.mclaren.org/content/Tools/jre-7u45-windows-i586.exe
+        PING localhost -n 10 >NUL
+    )
 )
 
 if exist %USERPROFILE%\Downloads\TeamNotesFormEditorLibrary.msi (
     echo Team Notes already downloaded.
+    PING localhost -n 3 >NUL
 ) else (
     bitsadmin /transfer "Team Notes" http://wsp.mclaren.org/content/Tools/TeamNotesFormEditorLibrary.msi %UserProfile%\Downloads\TeamNotesFormEditorLibrary.msi
+    if exist %USERPROFILE%\Downloads\TeamNotesFormEditorLibrary.msi (
+        echo Team Notes successfully downloaded
+        PING localhost -n 2 >NUL
+    ) else (
+        echo Please download Team Notes from http://wsp.mclaren.org/content/Tools/TeamNotesFormEditorLibrary.msi
+        PING localhost -n 10 >NUL
+    )
 )
+
+
+
 
 EXIT /B 0
 
