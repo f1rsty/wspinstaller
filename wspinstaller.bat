@@ -29,7 +29,7 @@ IF %M%==3 GOTO EOF
 :INSTALLWSP
 SETLOCAL
 set SCRIPT_VERSION=0.0.1
-set SCRIPT_UPDATED=08-07-2019
+set SCRIPT_UPDATED=08-08-2019
 title WSP Installer v%SCRIPT_VERSION% (%SCRIPT_UPDATED%)
 
 cls
@@ -63,7 +63,7 @@ call :JAVAINSTALL
 call :TEAMNOTESINSTALL
 call :TRUSTEDSITES
 call :ADDSHORTCUT
-::call :PACSNUKE
+call :PACSNUKE
 GOTO MENU
 
 :: Adds the WSP Icon (Internet Explorer) to the desktop - Sets the homepage for that shortcut to the site and 
@@ -662,16 +662,27 @@ reg delete "HKLM\SOFTWARE\WOW6432Node\JavaSoft\Java Update" /f
 EXIT /B 0
 
 :PACSNUKE
-SETLOCAL
-
-set LOGPATH=%SystemDrive%\Logs
-set LOGFILE=%COMPUTERNAME%_pacs_removal.log
-
 @echo off && cls
-set SCRIPT_VERSION=0.0.1
-set SCRIPT_UPDATED=08-07-2019
-:: Get the date into ISO 8601 standard format (yyyy-mm-dd) so we can use it
-FOR /f %%a in ('WMIC OS GET LocalDateTime ^| find "."') DO set DTS=%%a
-set CUR_DATE=%DTS:~0,4%-%DTS:~4,2%-%DTS:~6,2%
 
-title PACS Nuker v%SCRIPT_VERSION% (%SCRIPT_UPDATED%)
+if exist %ProgramFiles%\AMICAS (
+	echo found older viewer in %ProgramFiles%\AMICAS
+    del %ProgramFiles%\AMICAS
+) else (
+    echo nothing found in %ProgramFiles%\AMICAS
+)
+
+if exist %UserProfile%\AppData\LocalLow\AMICAS (
+	echo found older viewer in %UserProfile%\AppData\LocalLow\AMICAS
+    del %UserProfile%\AppData\LocalLow\AMICAS
+) else (
+    echo nothing found in %UserProfile%\AppData\LocalLow\AMICAS
+)
+
+if exist %AppData%\AMICAS (
+	echo found older viewer in %AppData%\AMICAS
+    del %AppData%\AMICAS
+) else (
+    echo nothing found in %AppData%\AMICAS
+)
+
+EXIT /b 0
