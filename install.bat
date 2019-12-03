@@ -20,12 +20,12 @@ echo 6. McLaren Central
 echo Q. Back to options menu
 ECHO.
 SET /P M=Enter your selection: 
-IF %M%==1 set jregistry=java745.reg && set executable=java745.exe && set shortcutlink="https://mrmc-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fWSP" && set linktext=McLaren WSP Flint
-IF %M%==2 set jregistry=java631.reg && set executable=java631.exe && set shortcutlink="https://lrmc-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fwsp%2f" && set linktext=McLaren WSP Lapeer
-IF %M%==3 set jregistry=java745.reg && set executable=java745.exe && set shortcutlink="https://bay-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fwsp" && set linktext=McLaren WSP Bay
-IF %M%==4 set jregistry=java631.reg && set executable=java631.exe && set shortcutlink="https://mcrmc-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fwsp" && set linktext=McLaren WSP Macomb
-IF %M%==5 set jregistry=java631.reg && set executable=java631.exe && set shortcutlink="https://poh-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fwsp" && set linktext=McLaren WSP Oakland
-IF %M%==6 set jregistry=java745.reg && set executable=java745.exe && set shortcutlink="https://cmi-wsp.mclaren.org/WSP/Login.aspx?ReturnUrl=%2fwsp" && set linktext=McLaren WSP Central
+IF %M%==1 set jregistry=java745.reg && set executable=java745.exe && set shortcutlink="https://mrmc-wsp.mclaren.org/WSP/Login.aspx" && set linktext=McLaren WSP Flint
+IF %M%==2 set jregistry=java631.reg && set executable=java631.exe && set shortcutlink="https://lrmc-wsp.mclaren.org/WSP/Login.aspx" && set linktext=McLaren WSP Lapeer
+IF %M%==3 set jregistry=java745.reg && set executable=java745.exe && set shortcutlink="https://bay-wsp.mclaren.org/WSP/Login.aspx" && set linktext=McLaren WSP Bay
+IF %M%==4 set jregistry=java631.reg && set executable=java631.exe && set shortcutlink="https://mcrmc-wsp.mclaren.org/WSP/Login.aspx" && set linktext=McLaren WSP Macomb
+IF %M%==5 set jregistry=java631.reg && set executable=java631.exe && set shortcutlink="https://poh-wsp.mclaren.org/WSP/Login.aspx" && set linktext=McLaren WSP Oakland
+IF %M%==6 set jregistry=java745.reg && set executable=java745.exe && set shortcutlink="https://cmi-wsp.mclaren.org/WSP/Login.aspx" && set linktext=McLaren WSP Central
 IF %M%==Q GOTO EOF
 
 call javauninstall.bat
