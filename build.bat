@@ -1,2 +1,2 @@
 @echo off
-iexpress /N install.SED
+iexpress /n install.sed
