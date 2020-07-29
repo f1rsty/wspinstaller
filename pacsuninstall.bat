@@ -1,6 +1,8 @@
 @echo off && cls
 title PACS Uninstaller
 
+taskkill /f /im "iexplore.exe"
+
 if exist %ProgramFiles%\AMICAS (
 	echo found older viewer in %ProgramFiles%\AMICAS
     del %ProgramFiles%\AMICAS /f /q
