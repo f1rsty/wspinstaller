@@ -2,6 +2,8 @@
 title PACS Uninstaller
 
 taskkill /f /im "iexplore.exe"
+taskkill /f /im "aStudyCacheMgr.exe"
+taskkill /f /im "aViewer.exe"
 
 if exist %ProgramFiles%\AMICAS (
 	echo found older viewer in %ProgramFiles%\AMICAS
